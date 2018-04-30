@@ -1,0 +1,41 @@
+body {
+	margin: 10px;
+	background-color: #8ef;
+	font-family: arial;
+}
+
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+th, td {
+	padding: 4px;
+}
+
+th {
+	background-color: #6de;
+}
+
+td {
+	background-color: #fff;
+}
+
+a.deviceButton:link, a.deviceButton:visited, a.deviceButton:active, a.userButton:link, a.userButton:visited, a.userButton:active {
+	color: black;
+	font-size: 1.2em;
+	text-decoration: none;
+	background-color: #6de;
+	padding: 5px;
+	border: 1px solid #4bc;
+}
+
+a.deviceButton:hover {
+	background-color: #5cd;
+}
+
+form {
+	background-color: #6de;
+	border: 1px solid #4bc;
+	padding: 5px;
+}
