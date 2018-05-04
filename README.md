@@ -12,29 +12,29 @@ We created a database application for an IT/Technology Services department to us
 One note: If the device is not assigned to a user, then it will not show any location info on the home screen. This is by design. This application was developed because I actually work in technology services, and wanted to write an inventory system to replace our current system, and in our department the standard is that a device must always be assigned to a user, except for when the device is in the possession of tech services, in which case we leave the location blank to indicate that it is in or possession, rather than assigning it to us, only to reassign it out later. Also, we allow you, the DB user, to add users to the second table currently, however if this system were implemented in a UM system, the table would pull from a list of UM users, so we do not offer the capability to view the users table, because this functionality would be useless in the actual implementation of this app.
 
 ## **Schema**
-* This application uses two tables, Devices and Users.
+This application uses two tables, Devices and Users.
 
-### __Devices__
+### _Devices_
 
-ID integer NOT NULL AUTO_INCREMENT
-SerialNumber varchar(45) NOT NULL
-Brand varchar(45) NOT NULL
-Model varchar(45)
-Owner integer
-DepartmentOwner varchar(45) NOT NULL
-MoCodePurchasedBy varchar(45) NOT NULL
-Type varchar(45) NOT NULL
-PRIMARY KEY(ID)
+* ID integer NOT NULL AUTO_INCREMENT
+* SerialNumber varchar(45) NOT NULL
+* Brand varchar(45) NOT NULL
+* Model varchar(45)
+* Owner integer
+* DepartmentOwner varchar(45) NOT NULL
+* MoCodePurchasedBy varchar(45) NOT NULL
+* Type varchar(45) NOT NULL
+* PRIMARY KEY(ID)
 
-### __Users__
+### _Users_
 
-ID integer NOT NULL AUTO_INCREMENT
-FirstName varchar(45)
-LastName varchar(45)
-Pawprint varchar(45) NOT NULL
-OfficeNumber integer
-OfficeLetter char
-PRIMARY KEY(ID)# CS3380FinalProject
+* ID integer NOT NULL AUTO_INCREMENT
+* FirstName varchar(45)
+* LastName varchar(45)
+* Pawprint varchar(45) NOT NULL
+* OfficeNumber integer
+* OfficeLetter char
+* PRIMARY KEY(ID)# CS3380FinalProject
 
 ## Entity Relationship Diagram
 ![](https://github.com/Gordon-Casey/CS3380FinalProject/blob/master/CS3380%20Final%20Project%20ERD.png)
