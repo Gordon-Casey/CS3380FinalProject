@@ -38,3 +38,19 @@ PRIMARY KEY(ID)# CS3380FinalProject
 
 ## Entity Relationship Diagram
 ![](https://github.com/Gordon-Casey/CS3380FinalProject/blob/master/CS3380%20Final%20Project%20ERD.png)
+
+
+## CRUD
+
+* Create: We create records using the "Add Device" and "Add User" buttons.
+* Read: We read (view) records on the home page, where we view every device, and we also view a specific set of records through the search bar.
+* Update: We update records using the "Update" button on the right end of every record.
+* Delete: We delete records using the "Delete" button on the right end of every record.
+
+## Video Demo
+
+Attached is a link to the YouTube video (I did not want to embed the video or anything like that for readability reasons, I thought it may look ugly).
+
+https://www.youtube.com/watch?v=p4QWI2PVyoo&t=27s
+
+
