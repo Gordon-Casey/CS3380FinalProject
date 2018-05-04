@@ -1,41 +1,94 @@
+
+
 body {
-	margin: 10px;
-	background-color: #8ef;
-	font-family: arial;
+  background-color: #fff;
+  background-image: url('img_chapters_generic.png');
+  background-position: center top;
+  background-size:  cover;
+  padding: 70px 90px 120px 90px;
+  
 }
-
-table, th, td {
-	border: 1px solid black;
-	border-collapse: collapse;
-}
-
-th, td {
-	padding: 4px;
-}
-
+table
+		{
+			width: 25%;
+			/*height: 5%;*/
+			border-collapse: collapse;
+			position: relative;
+			top: -`12.5%;          	
+			
+		}
+.scroll
+		{
+			min-height: 67.5%;
+			width: 26.5%;
+			position: absolute;
+			top: 162%;
+			overflow: scroll;
+		}
 th {
-	background-color: #6de;
+  font-family: Lato-Bold;
+  font-size: 18px;
+  color: #fff;
+  line-height: 1.4;
+  border: 3px solid #000;
+
+  background-color: #6c7a40;
 }
 
 td {
-	background-color: #fff;
+  font-family: Lato-Regular;
+  font-size: 15px;
+  color: #606060;
+  line-height: 1.4;
+  text-align: center;
+  border: 2px solid #000
+  
+}
+
+body tr:nth-child(even) {
+  background-color: #FAFAD2;
+}
+body tr:nth-child(odd) {
+  background-color: #BDB76B;
+  
 }
 
 a.deviceButton:link, a.deviceButton:visited, a.deviceButton:active, a.userButton:link, a.userButton:visited, a.userButton:active {
 	color: black;
-	font-size: 1.2em;
+	font-size: 1.2em;  	
 	text-decoration: none;
-	background-color: #6de;
+	background-color: #FFDF00;
 	padding: 5px;
 	border: 1px solid #4bc;
+    -webkit-border-radius: 28;
+  	-moz-border-radius: 28;
+  	border-radius: 28;
+  
+  
 }
 
 a.deviceButton:hover {
-	background-color: #5cd;
+	background-color: #FFDF00;
 }
 
 form {
-	background-color: #6de;
-	border: 1px solid #4bc;
+	background-color: rgba(255, 223, 0, 0.1);;
+	border: 3px solid transparent;
 	padding: 5px;
+  	position: relative;
+  	width: 25%
 }
+.header img {
+  float: left;
+  width: 66px;
+  height: 74px;
+  background: transparent;
+}
+
+.header h1 {
+  position: relative;
+  top: 18px;
+  left: 10px;
+  padding: 10px;
+}
+

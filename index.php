@@ -3,42 +3,36 @@
 
 	$message = '';
 	
-	$target = $_GET['target'];
 	$action = $_POST['action'];
 	
 	switch($action) {
+		case 'presentAddDevice':
+			presentAddDevice();
+			break;
 		case 'addDevice':
 			$message = addDevice();
+			getInventory($message);
+			break;
+		case 'presentAddUser':
+			presentAddUser();
 			break;
 		case 'addUser':
 			$message = addUser();
+			getInventory($message);
 			break;
 		case 'deleteDevice':
 			$message = deleteDevice();
+			getInventory($message);
+			break;
+		case 'beginUpdateDevice':
+			$message = beginUpdateDevice();
 			break;
 		case 'updateDevice':
 			$message = updateDevice();
-			break;
-		case 'updateDeviceCode':
-			$message = updateDeviceCode();
+			getInventory($message);
 			break;
 		case 'searchDevices':
 			$message = searchDevices();
-			break;
-
-	}
-	
-	switch($target) {
-		case 'addDevice':
-			presentAddDevice();
-			break;
-		case 'updateDevice':
-			updateDevice();
-			break;
-		case 'searchDevices':
-			searchDevices();
-			break;
-		case 'blah':
 			break;
 		default:
 			getInventory($message);
@@ -67,7 +61,7 @@
 			// Preforms the SQL query and checks to see if there was an error.
 			if ($result = $mysqli->query($sql)) {
 				if ($result->num_rows > 0) {
-					// If no error, then turns the dada into an associative array
+					// If no error, then turns the data into an associative array
 					while($row = $result->fetch_assoc()) {
 						array_push($devices, $row);
 					}
@@ -86,23 +80,36 @@
 	}
 
 	function generateInventoryHTML($devices, $message){
-		$html = "<h1>Devices</h1>\n";
+		$html = "<div class='header'><img src='logo.png' alt='logo'/><h1>Technology Services Inventory System</h1></div>\n";
 
 		// This appends any sort of notification messages onto the screen
 		if($message){
 			$html .= "<p class='message'>$message</p>\n";
 		}
-		//$html .= "<form>Search:<input type='text' name='searchString'></form>";
 
+		$html .= "<style>
+					input[type=text] {
+    				width: 130px;
+    				box-sizing: border-box;
+    				border: 2px solid #ccc;
+    				border-radius: 4px;
+    				font-size: 16px;
+    				background-color: white;
+    				background-repeat: no-repeat;
+    				-webkit-transition: width 0.4s ease-in-out;
+    				transition: width 0.4s ease-in-out;
+					}
+					input[type=text]:focus {
+    				width: 75%;
+					}
+					</style>
+                    <form action='index.php' method='post'><input type='hidden' name='action' value='searchDevices'/><input type='text' name='searchString' value=''placeholder='Search here..' ><input type='submit' value='Search Devices'></form>";
 
-		$html .= "<form action='index.php' method='post'><input type='hidden' name='action' value='searchDevices'/><input type='text' name='searchString' value=''placeholder='Search here..' ><input type='submit' value='searchDevices'></form>";
-		
-		$html .= "<p><a class='deviceButton' href='index.php?target=addDevice'>+ Add Device</a></p>\n"; 
+		$html .= "<form action='index.php' method='post'><input type='hidden' name='action' value='presentAddDevice'/><input type='submit' value='Add Device'></form>";
 
-		// <a class='userButton' href=index.php?target=addUser'>+ Add User</a>
+		$html .= "<form action='index.php' method='post'><input type='hidden' name='action' value='presentAddUser'/><input type='submit' value='Add User'></form>";
 
-		//"<form action='index.php' method='post'><input type='hidden' name='action' value='updateDevice'/><input type = 'hidden' name='ID' value='$id' /><input type='submit' value='Update'></form>"
-
+		// $html .= "<a class='userButton' href=index.php?target=addUser'>+ Add User</a></p>";
 	
 		if (count($devices) < 1) {
 			$html .= "<p>No devices to display!</p>\n";
@@ -124,7 +131,7 @@
 			$department = $device['DepartmentOwner'];
 			$mocode = $device['MoCodePurchasedBy'];
 			
-			$html .= "<tr><td>$brand</td><td>$type</td><td>$model</td><td>$name</td><td>$pawprint</td><td>$location</td><td>$serialNumber</td><td>$id</td><td>$department</td><td>$mocode</td><td><form action='index.php' method='post'><input type='hidden' name='action' value='updateDevice'/><input type = 'hidden' name='ID' value='$id' /><input type='submit' value='Update'></form></td><td><form action='index.php' method='post'><input type='hidden' name='action' value='deleteDevice'/><input type = 'hidden' name='ID' value='$id' /><input type='submit' value='Delete'></form></td></tr>\n";
+			$html .= "<tr><td>$brand</td><td>$type</td><td>$model</td><td>$name</td><td>$pawprint</td><td>$location</td><td>$serialNumber</td><td>$id</td><td>$department</td><td>$mocode</td><td><form action='index.php' method='post'><input type='hidden' name='action' value='beginUpdateDevice'/><input type = 'hidden' name='ID' value='$id' /><input type='submit' value='Update'></form></td><td><form action='index.php' method='post'><input type='hidden' name='action' value='deleteDevice'/><input type = 'hidden' name='ID' value='$id' /><input type='submit' value='Delete'></form></td></tr>\n";
 		}
 		
 		$html .= "</table>\n";
@@ -133,11 +140,48 @@
 	}
 
 	function searchDevices(){
-		print("heyo");
-		$searchString = $_GET['searchString'];
-		print($searchString);
+		$searchString = $_POST['searchString'];
 
-		return $html;
+		if(!$searchString){
+			getInventory("No devices specified to search for");
+			return;
+		}
+
+		$stylesheet = 'inventory.css';
+
+		$devices = array();
+
+		// Create Connection
+		require('db_credentials.php');
+		$mysqli = new mysqli($servername, $username, $password, $dbname);
+
+		if($mysqli->connect_error){
+
+			$message = $mysqli->connect_error;
+
+		} else {
+
+			// This string is the SQL statement to be executed
+			$sql = "SELECT Devices.Brand, Devices.Model, Devices.Type, (SELECT Users.FirstName FROM Users WHERE Devices.Owner = Users.Id) as UserFirstName, (SELECT Users.LastName FROM Users WHERE Devices.Owner = Users.Id) as UserLastName, (SELECT Users.Pawprint FROM Users WHERE Devices.Owner = Users.Id) as UserPawprint, (SELECT Users.OfficeNumber FROM Users WHERE Devices.Owner = Users.Id) as UserOfficeNumber, (SELECT Users.OfficeLetter FROM Users WHERE Devices.Owner = Users.Id) as UserOfficeLetter, Devices.SerialNumber, Devices.DepartmentOwner, Devices.MoCodePurchasedBy, Devices.ID  FROM Devices WHERE Devices.Brand LIKE '%$searchString%' || Devices.Model LIKE '%$searchString%' || Devices.Type LIKE '%$searchString%' || (SELECT Users.FirstName FROM Users WHERE Devices.Owner = Users.Id) LIKE '%$searchString%' || (SELECT Users.LastName FROM Users WHERE Devices.Owner = Users.Id) LIKE '%$searchString%' || (SELECT Users.Pawprint FROM Users WHERE Devices.Owner = Users.Id) LIKE '%$searchString%' || (SELECT Users.OfficeNumber FROM Users WHERE Devices.Owner = Users.Id) LIKE '%$searchString%' || (SELECT Users.OfficeLetter FROM Users WHERE Devices.Owner = Users.Id) LIKE '%$searchString%' || Devices.SerialNumber LIKE '%$searchString%' || Devices.DepartmentOwner LIKE '%$searchString%' || Devices.MoCodePurchasedBy LIKE '%$searchString%'";
+
+			// Preforms the SQL query and checks to see if there was an error.
+			if ($result = $mysqli->query($sql)) {
+				if ($result->num_rows > 0) {
+					// If no error, then turns the data into an associative array
+					while($row = $result->fetch_assoc()) {
+						array_push($devices, $row);
+					}
+				}
+				$result->close();
+			} else {
+				// If there was an error from the SQL statement
+				$message = $mysqli->error;
+			}
+
+			$mysqli->close();
+		}
+
+		print generatePageHTML("Devices", generateInventoryHTML($devices, $message), $stylesheet);
 	}
 
 	function deleteDevice(){
@@ -166,6 +210,79 @@
 
 		return $message;
 
+	}
+
+	function presentAddUser(){
+		$html = <<<EOT
+			<!DOCTYPE html>
+			<html>
+			<head>
+			<title>Gordon's Inventory</title>
+			<link rel="stylesheet" type="text/css" href="inventory.css">
+			</head>
+			<body>
+			<h1>Add a User</h1>
+			<form action="index.php" method="post">
+
+			<form action="index.php" method="post"><input type="hidden" name="action" value="addUser" />
+
+			  <p>First Name<br />
+			  <input type="text" name="FirstName" value="" placeholder="" maxlength="255" size="30"></p>
+
+			  <p>Last Name<br />
+			  <input type="text" name="LastName" value="" placeholder="" maxlength="255" size="30"></p>
+
+			  <p>Pawprint<br />
+			  <input type="text" name="Pawprint" value="" placeholder="" maxlength="255" size="30"></p>
+
+			  <p>Office Number<br />
+			  <input type="text" name="Number" value="" placeholder="Eg. 308" maxlength="255" size="30"></p>
+
+			  <p>Office Letter<br />
+			  <input type="text" name="Letter" value="" placeholder="Eg. D - Leave empty if no office letter" maxlength="255" size="30"></p>
+
+			  <input type="submit" value="Submit">
+			</form>
+			</body>
+			</html>
+EOT;
+		print($html);
+	}
+
+	function addUser(){
+		$firstName = $_POST['FirstName'];
+		$lastName = $_POST['LastName'];
+		$pawprint = $_POST['Pawprint'];
+		$number = $_POST['Number'];
+		$letter = $_POST['Letter'];
+		
+		// Create connection
+		require('db_credentials.php');
+		$mysqli = new mysqli($servername, $username, $password, $dbname);
+		if ($mysqli->connect_error) {
+				$message = $mysqli->connect_error;
+				print("here2");
+		} else {
+			$id = $mysqli->real_escape_string($id);
+			$sql = "DELETE FROM Devices WHERE ID = $id";
+			if ( $result = $mysqli->query($sql) ) {
+				$message = "Device was deleted.";
+			} else {
+				$firstName = $mysqli->real_escape_string($firstName);
+				$lastName = $mysqli->real_escape_string($lastName);
+				$pawprint = $mysqli->real_escape_string($pawprint);
+				$number = $mysqli->real_escape_string($number);
+				$letter = $mysqli->real_escape_string($letter);
+				$sql = "INSERT INTO Users (FirstName, LastName, Pawprint, OfficeNumber, OfficeLetter) VALUES ('$firstName', '$lastName', '$pawprint', '$number', '$letter')";
+				if ( $result = $mysqli->query($sql) ) {
+					$message = "User added";
+				} else {
+					$message = $mysqli->error;
+				}
+				$mysqli->close();
+			}
+		}
+		return $message;
 	}
 
 	function presentAddDevice(){
@@ -272,7 +389,7 @@ EOT;
 
 
 
-	function updateDevice(){	
+	function beginUpdateDevice(){	
 		$message = "";
 
 		$id = $_POST['ID'];
@@ -316,7 +433,7 @@ $html = <<<EOT
 			<h1>Edit Device</h1>
 			
 
-			<form action='index.php' method='post'><input type='hidden' name='action' value='updateDeviceCode' />
+			<form action='index.php' method='post'><input type='hidden' name='action' value='updateDevice' />
 
 			<form action='index.php' method='post'><input type = 'hidden' name='ID' value='$id' />
 
@@ -356,11 +473,9 @@ EOT;
 				}
 			}
 		}
-
-		$target = null;
 	}
 
-	function updateDeviceCode(){
+	function updateDevice(){
 		$message = "";
 
 		$id = $_POST['ID'];
@@ -396,21 +511,22 @@ EOT;
 				$sql = "UPDATE Devices SET SerialNumber = '$serialNumber', Brand = '$brand', Model = '$model', Owner = '$holder', DepartmentOwner = '$departmentOwner', MoCodePurchasedBy = '$moCode', Type = '$type' WHERE Devices.ID = '$id'";
 
 				if ($result = $mysqli->query($sql)) {
-					$message = "Device was updated";
+					$mysqli->close();
+					return("Device was updated");
 				} else {
-					$message = $mysqli->error;
+					$mysqli->close();
+					return($mysqli->error);
 				}
 
 			} else {
 				$sql = "UPDATE Devices SET SerialNumber = '$serialNumber', Brand = '$brand', Model = '$model', Owner = '', DepartmentOwner = '$department', MoCodePurchasedBy = '$mocode', Type = '$type' WHERE Devices.ID = '$id'";
 				if ($result = $mysqli->query($sql)) {
-					$message = "Device was updated";
 					$mysqli->close();
+					return("Device was updated");
 				} else {
-					$message = $mysqli->error;
 					$mysqli->close();
+					return($mysqli->error);
 				}
-			
 			}
 		}
 	}
