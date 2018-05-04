@@ -35,3 +35,6 @@ Pawprint varchar(45) NOT NULL
 OfficeNumber integer
 OfficeLetter char
 PRIMARY KEY(ID)# CS3380FinalProject
+
+## Entity Relationship Diagram
+https://github.com/Gordon-Casey/CS3380FinalProject/blob/master/CS3380%20Final%20Project%20ERD.png
